@@ -146,7 +146,7 @@ APN on Rails has the following default configurations that you change for your s
 To generate the files that will be used here, run 
 
 <pre><code>
-script/rails generate configatron:install
+rails generate apn_on_rails:install
 </pre></code>
 
 Then customize the config/configatron files that were generated to your settings.
@@ -180,7 +180,7 @@ h3. Upgrade Notes:
 If you are upgrading to a new version of APN on Rails you should always run:
 
 <pre><code>
-ruby script/rails generate apn_on_rails:install
+rails generate apn_on_rails:install
 </pre></code>
 
 That way you ensure you have the latest version of the database tables needed.
