@@ -13,10 +13,10 @@ module APN
       def devices(cert, &block)
         devices = []
         return if cert.nil? 
-        APN::Connection.open_for_feedback({:cert => cert}) do |conn, sock|          
+        APN::Connection.open_for_feedback({:cert => cert}) do |conn, sock|
           while line = conn.read(38)   # Read 38 bytes from the SSL socket
-            feedback = line.unpack('N1n1H140')            
-            token = feedback[2].scan(/.{0,8}/).join(' ').strip
+            feedback = line.unpack('N1n1H140')
+            token = feedback[2].strip
             device = APN::Device.find(:first, :conditions => {:token => token})
             if device
               device.feedback_at = Time.at(feedback[0])
