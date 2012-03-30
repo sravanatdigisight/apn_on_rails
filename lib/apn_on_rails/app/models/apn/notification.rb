@@ -18,6 +18,7 @@ class APN::Notification < APN::Base
   include ::ActionView::Helpers::TextHelper
   extend ::ActionView::Helpers::TextHelper
   serialize :custom_properties
+  serialize :alert
   
   belongs_to :device, :class_name => 'APN::Device'
   has_one    :app,    :class_name => 'APN::App', :through => :device
@@ -48,10 +49,27 @@ class APN::Notification < APN::Base
   #   apn.sound = true
   #   apn.custom_properties = {"typ" => 1}
   #   apn.apple_hash # => {"aps" => {"badge" => 0, "sound" => "1.aiff"}, "typ" => "1"}
+  # 
+  # Example 3: 
+  #   apn = APN::Notification.new
+  #   apn.badge = 0
+  #   apn.sound = true
+  #   apn.custom_properties = {"typ" => 1}
+  #   apn.apple_hash # => {"aps" => {"badge" => 0, "sound" => "1.aiff", "alert" => {"body" => "test", "action-loc-key" => "test-loc-key"}}, "typ" => "1"}
+
   def apple_hash
     result = {}
     result['aps'] = {}
-    result['aps']['alert'] = self.alert if self.alert
+    if self.alert
+      if self.alert.kind_of?(Hash)
+        result['aps']['alert'] = {}
+        self.alert.each do |key,value|
+          result['aps']['alert']["#{key}"] = "#{value}"
+        end 
+      else
+        result['aps']['alert'] = self.alert 
+      end
+    end
     result['aps']['badge'] = self.badge.to_i if self.badge
     if self.sound
       result['aps']['sound'] = self.sound if self.sound.is_a? String
