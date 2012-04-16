@@ -66,3 +66,9 @@ end
 
 class BlockRan < StandardError
 end
+
+RSpec::Matchers.define :be_same_meaning_as do |expected|
+  match do |actual|
+    ActiveSupport::JSON.decode(actual) == ActiveSupport::JSON.decode(expected)
+  end
+end
