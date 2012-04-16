@@ -11,11 +11,11 @@ describe APN::App do
       notifications = [NotificationFactory.create({:device_id => device.id}),
                        NotificationFactory.create({:device_id => device.id})]
 
-     notifications.each_with_index do |notify, i|
-       notify.stub(:message_for_sending).and_return("message-#{i}")
-       notify.should_receive(:sent_at=).with(instance_of(Time))
-       notify.should_receive(:save)
-     end
+      notifications.each_with_index do |notify, i|
+        notify.stub(:message_for_sending).and_return("message-#{i}")
+        notify.should_receive(:sent_at=).with(instance_of(Time))
+        notify.should_receive(:save)
+      end
 
       APN::App.should_receive(:all).once.and_return([app])
       app.should_receive(:cert).twice.and_return(app.apn_dev_cert)
