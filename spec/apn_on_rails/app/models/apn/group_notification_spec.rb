@@ -55,8 +55,12 @@ describe APN::GroupNotification do
       let(:payload_part_header_length) { 2 }   # Payload length(2 byte)
       let(:boundaly_between_binary_and_payload) { token_part_header_length + device_token_binary_size + payload_part_header_length }
 
-      it do
-        subject.should == fixture_value('message_for_sending.bin')
+      it 'should eq eqch binary part' do
+        subject[0...boundaly_between_binary_and_payload].should == fixture_value('message_for_sending.bin')[0...boundaly_between_binary_and_payload]
+      end
+
+      it 'should be same meaning as each payload part' do
+        subject[boundaly_between_binary_and_payload..-1].should be_same_meaning_as fixture_value('message_for_sending.bin')[boundaly_between_binary_and_payload..-1]
       end
     end
 
