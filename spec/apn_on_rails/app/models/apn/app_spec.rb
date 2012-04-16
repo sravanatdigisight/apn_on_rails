@@ -44,7 +44,6 @@ describe APN::App do
   describe 'send_notifications_not_associated_with_an_app' do
 
     it 'should send unsent notifications that are associated with devices that are not with any app' do
-      RAILS_ENV = 'staging'
       device = DeviceFactory.create
       device.app_id = nil
       device.save
@@ -215,10 +214,10 @@ describe APN::App do
   end
 
   describe 'cert for production environment' do
+    let(:environment) { 'production' }
 
     it 'should return the production cert for the app' do
       app = AppFactory.create
-      RAILS_ENV = 'production'
       app.cert.should == app.apn_prod_cert
     end
 
@@ -228,7 +227,6 @@ describe APN::App do
 
     it 'should return the development cert for the app' do
       app = AppFactory.create
-      RAILS_ENV = 'staging'
       app.cert.should == app.apn_dev_cert
     end
   end
