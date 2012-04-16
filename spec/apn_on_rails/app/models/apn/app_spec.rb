@@ -1,6 +1,12 @@
 require File.join(File.dirname(__FILE__), '..', '..', '..', '..', 'spec_helper.rb')
 
 describe APN::App do
+  before do
+    # FIXME It will be unnecessary when app is on mountable engine.
+    ::Rails = double('Rails Module')  unless defined?(::Rails)
+    ::Rails.stub(:env => environment) unless ::Rails === Module
+  end
+  let(:environment) { 'staging' }
 
   describe 'send_notifications' do
 
