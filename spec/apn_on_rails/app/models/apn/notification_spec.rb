@@ -50,6 +50,10 @@ describe APN::Notification do
         noty.message_for_sending
       }
       let(:token) { '5gxadhy6 6zmtxfl6 5zpbcxmw ez3w7ksf qscpr55t trknkzap 7yyt45sc g6jrw7qz' }
+      let(:device_token_binary_size) { [token.delete(' ')].pack('H*').size }
+      let(:token_part_header_length) { 1 + 2 } # Command length(1 byte) + Token length(2 byte)
+      let(:payload_part_header_length) { 2 }   # Payload length(2 byte)
+      let(:boundaly_between_binary_and_payload) { token_part_header_length + device_token_binary_size + payload_part_header_length }
 
       it do
         subject.should == fixture_value('message_for_sending.bin')
