@@ -43,11 +43,15 @@ describe APN::GroupNotification do
   describe 'message_for_sending' do
 
     describe 'should create a binary message to be sent to Apple' do
-      it do
+      subject {
         noty = APN::GroupNotification.first
         noty.custom_properties = nil
         device = DeviceFactory.new(:token => '5gxadhy6 6zmtxfl6 5zpbcxmw ez3w7ksf qscpr55t trknkzap 7yyt45sc g6jrw7qz')
-        noty.message_for_sending(device).should == fixture_value('message_for_sending.bin')
+        noty.message_for_sending(device)
+      }
+
+      it do
+        subject.should == fixture_value('message_for_sending.bin')
       end
     end
 
