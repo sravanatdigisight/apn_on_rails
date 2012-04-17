@@ -46,9 +46,10 @@ describe APN::Notification do
       subject {
         noty = APN::Notification.first
         noty.custom_properties = nil
-        noty.device = DeviceFactory.new(:token => '5gxadhy6 6zmtxfl6 5zpbcxmw ez3w7ksf qscpr55t trknkzap 7yyt45sc g6jrw7qz')
+        noty.device = DeviceFactory.new(:token => token)
         noty.message_for_sending
       }
+      let(:token) { '5gxadhy6 6zmtxfl6 5zpbcxmw ez3w7ksf qscpr55t trknkzap 7yyt45sc g6jrw7qz' }
 
       it do
         subject.should == fixture_value('message_for_sending.bin')
