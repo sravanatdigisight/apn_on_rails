@@ -25,23 +25,23 @@ require File.join(File.dirname(__FILE__), 'factories', 'pull_notification_factor
 configatron.apn.cert = File.expand_path(File.join(File.dirname(__FILE__), 'rails_root', 'config', 'apple_push_notification_development.pem'))
 
 RSpec.configure do |config|
-  
+
   config.before(:all) do
-    
+
   end
-  
+
   config.after(:all) do
-    
+
   end
-  
+
   config.before(:each) do
 
   end
-  
+
   config.after(:each) do
-    
+
   end
-  
+
 end
 
 def fixture_path(*name)
