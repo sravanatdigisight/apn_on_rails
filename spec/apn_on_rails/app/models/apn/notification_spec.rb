@@ -51,7 +51,7 @@ describe APN::Notification do
 
     it 'should raise an APN::Errors::ExceededMessageSizeError if the message is too big' do
       noty = NotificationFactory.new(:device_id => DeviceFactory.create, :sound => true, :badge => nil)
-      noty.send(:write_attribute, 'alert', 'a' * 183)
+      noty.stub(:to_apple_json).and_return('_' * 257)
       lambda {
         noty.message_for_sending
       }.should raise_error(APN::Errors::ExceededMessageSizeError)
