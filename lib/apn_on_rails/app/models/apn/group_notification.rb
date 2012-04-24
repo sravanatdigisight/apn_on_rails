@@ -2,19 +2,19 @@ class APN::GroupNotification < APN::Base
   include ::ActionView::Helpers::TextHelper
   extend ::ActionView::Helpers::TextHelper
   serialize :custom_properties
-  
+
   belongs_to :group, :class_name => 'APN::Group'
   has_one    :app, :class_name => 'APN::App', :through => :group
   has_many   :device_groupings, :through => :group
-  
+
   validates_presence_of :group_id
-  
+
   def devices
     self.group.devices
   end
-  
+
   # Stores the text alert message you want to send to the device.
-  # 
+  #
   # If the message is over 150 characters long it will get truncated
   # to 150 characters with a <tt>...</tt>
   def alert=(message)
@@ -23,9 +23,9 @@ class APN::GroupNotification < APN::Base
     end
     write_attribute('alert', message)
   end
-  
+
   # Creates a Hash that will be the payload of an APN.
-  # 
+  #
   # Example:
   #   apn = APN::GroupNotification.new
   #   apn.badge = 5
@@ -33,7 +33,7 @@ class APN::GroupNotification < APN::Base
   #   apn.alert = 'Hello!'
   #   apn.apple_hash # => {"aps" => {"badge" => 5, "sound" => "my_sound.aiff", "alert" => "Hello!"}}
   #
-  # Example 2: 
+  # Example 2:
   #   apn = APN::GroupNotification.new
   #   apn.badge = 0
   #   apn.sound = true
@@ -55,9 +55,9 @@ class APN::GroupNotification < APN::Base
     end
     result
   end
-  
+
   # Creates the JSON string required for an APN message.
-  # 
+  #
   # Example:
   #   apn = APN::Notification.new
   #   apn.badge = 5
@@ -67,7 +67,7 @@ class APN::GroupNotification < APN::Base
   def to_apple_json
     self.apple_hash.to_json
   end
-  
+
   # Creates the binary message needed to send to Apple.
   def message_for_sending(device)
     json = self.to_apple_json
@@ -75,5 +75,5 @@ class APN::GroupNotification < APN::Base
     raise APN::Errors::ExceededMessageSizeError.new(message) if message.size.to_i > 256
     message
   end
-  
+
 end # APN::Notification
