@@ -57,6 +57,14 @@ describe APN::Notification do
       }.should raise_error(APN::Errors::ExceededMessageSizeError)
     end
 
+    it 'should not raise any error if the payload is not too big' do
+      noty = NotificationFactory.new(:device_id => DeviceFactory.create, :sound => true, :badge => nil)
+      noty.stub(:to_apple_json).and_return('_' * 256)
+      lambda {
+        noty.message_for_sending
+      }.should_not raise_error
+    end
+
   end
 
   describe 'send_notifications' do
