@@ -49,7 +49,11 @@ def fixture_path(*name)
 end
 
 def fixture_value(*name)
-  return File.read(fixture_path(*name))
+  if RUBY_VERSION =~ /^1\.8/
+    File.read(fixture_path(*name))
+  else
+    File.read(fixture_path(*name), :encoding  => 'BINARY')
+  end
 end
 
 def write_fixture(name, value)
