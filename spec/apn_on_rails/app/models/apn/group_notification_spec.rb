@@ -61,6 +61,18 @@ describe APN::GroupNotification do
       }.should raise_error(APN::Errors::ExceededMessageSizeError)
     end
 
+    it 'should not raise any error if the payload is not too big' do
+      app = AppFactory.create
+      device = DeviceFactory.create({:app_id => app.id})
+      group =   GroupFactory.create({:app_id => app.id})
+      device_grouping = DeviceGroupingFactory.create({:group_id => group.id,:device_id => device.id})
+      noty = GroupNotificationFactory.new(:group_id => group.id, :sound => true, :badge => nil)
+      noty.stub(:to_apple_json).and_return('_' * 256)
+      lambda {
+        noty.message_for_sending(device)
+      }.should_not raise_error
+    end
+
   end
 
 end
