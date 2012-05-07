@@ -25,23 +25,23 @@ require File.join(File.dirname(__FILE__), 'factories', 'pull_notification_factor
 configatron.apn.cert = File.expand_path(File.join(File.dirname(__FILE__), 'rails_root', 'config', 'apple_push_notification_development.pem'))
 
 RSpec.configure do |config|
-  
+
   config.before(:all) do
-    
+
   end
-  
+
   config.after(:all) do
-    
+
   end
-  
+
   config.before(:each) do
 
   end
-  
+
   config.after(:each) do
-    
+
   end
-  
+
 end
 
 def fixture_path(*name)
@@ -49,7 +49,11 @@ def fixture_path(*name)
 end
 
 def fixture_value(*name)
-  return File.read(fixture_path(*name))
+  if RUBY_VERSION =~ /^1\.8/
+    File.read(fixture_path(*name))
+  else
+    File.read(fixture_path(*name), :encoding  => 'BINARY')
+  end
 end
 
 def write_fixture(name, value)
@@ -61,4 +65,10 @@ def apn_cert
 end
 
 class BlockRan < StandardError
+end
+
+RSpec::Matchers.define :be_same_meaning_as do |expected|
+  match do |actual|
+    ActiveSupport::JSON.decode(actual) == ActiveSupport::JSON.decode(expected)
+  end
 end
