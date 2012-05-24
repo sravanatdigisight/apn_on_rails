@@ -99,7 +99,7 @@ class APN::Notification < APN::Base
   def message_for_sending
     json = self.to_apple_json
     message = "\0\0 #{self.device.to_hexa}\0#{json.length.chr}#{json}"
-    raise APN::Errors::ExceededMessageSizeError.new(message) if message.size.to_i > 256
+    raise APN::Errors::ExceededMessageSizeError.new("#{message} #{message.size.to_i}") if message.size.to_i > 256
     message
   end
   
