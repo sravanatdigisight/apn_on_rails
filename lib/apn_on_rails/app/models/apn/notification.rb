@@ -28,8 +28,8 @@ class APN::Notification < APN::Base
   # If the message is over 150 characters long it will get truncated
   # to 150 characters with a <tt>...</tt>
   def alert=(message)
-    if !message.blank? && message.size > 150
-      message = truncate(message, :length => 150)
+    if !message.blank? && message.size > 145
+      message = truncate(message, :length => 145)
     end
     write_attribute('alert', message)
   end
