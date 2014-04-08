@@ -66,14 +66,33 @@ class APN::App < APN::Base
       return
     end
     unless self.unsent_group_notifications.nil? || self.unsent_group_notifications.empty?
-      APN::Connection.open_for_delivery({:cert => self.cert}) do |conn, sock|
-        unsent_group_notifications.each do |gnoty|
-          gnoty.devices.find_each do |device|
-            conn.write(gnoty.message_for_sending(device))
+      #APN::Connection.open_for_delivery({:cert => self.cert}) do |conn, sock|
+      #  unsent_group_notifications.each do |gnoty|
+      #    gnoty.devices.find_each do |device|
+      #      conn.write(gnoty.message_for_sending(device))
+      #    end
+      #    gnoty.sent_at = Time.now
+      #    gnoty.save
+      #  end
+      #end
+      unsent_group_notifications.each do |gnoty|
+        failed = 0
+        devices_to_send = gnoty.devices.count
+        gnoty.devices.find_in_batches(:batch_size => 100) do |devices|
+          APN::Connection.open_for_delivery({:cert => self.cert}) do |conn, sock|
+            devices.each do |device|
+              begin
+                conn.write(gnoty.message_for_sending(device))
+              rescue Exception => e
+                puts e.message
+                failed += 1
+              end
+            end
           end
-          gnoty.sent_at = Time.now
-          gnoty.save
         end
+        puts "Sent to: #{devices_to_send - failed}/#{devices_to_send} "
+        gnoty.sent_at = Time.now
+        gnoty.save
       end
     end
   end
