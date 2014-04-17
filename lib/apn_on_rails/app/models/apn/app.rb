@@ -140,11 +140,7 @@ class APN::App < APN::Base
   end # process_devices
 
   def self.process_devices
-    if self.cert.nil?
-      puts "Enter self.process_devices, cert = #{self.cert}"
-    else
-      puts "Enter self.process_devices, cert = #{self.cert.inspect}"
-    end
+    puts "Enter self.process_devices"
     apps = APN::App.all
     apps.each do |app|
       app.process_devices
