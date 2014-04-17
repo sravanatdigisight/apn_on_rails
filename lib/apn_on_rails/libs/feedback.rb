@@ -20,7 +20,9 @@ module APN
             token = token.downcase.gsub(/(.{8})(?=.)/, '\1 \2')
             device = APN::Device.find(:first, :conditions => {:token => token})
             if device
-              device.feedback_at = Time.at(feedback[0])
+              #device.feedback_at = Time.at(feedback[0])
+              puts "Feedback time = #{Time.at(feedback[0])}"
+              device.update_attribute(:feedback_at, Time.at(feedback[0]))
               device.save!
               devices << device
             end
