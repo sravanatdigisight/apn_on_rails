@@ -20,6 +20,7 @@ module APN
             feedback = line.unpack('N1n1H140')
             puts "feedback: #{feedback}"
             token = feedback[2].strip
+            token = token.downcase.gsub(/(.{8})(?=.)/, '\1 \2')
             puts "token: #{token}"
             device = APN::Device.find(:first, :conditions => {:token => token})
             puts "device: #{device}"
