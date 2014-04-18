@@ -16,14 +16,11 @@ module APN
         APN::Connection.open_for_feedback({:cert => cert}) do |conn, sock|
           while line = conn.read(38)   # Read 38 bytes from the SSL socket
             feedback = line.unpack('N1n1H140')
-            puts "feedback: #{feedback.inspect}"
-            token = feedback[2].strip
-            token = token.downcase.gsub(/(.{8})(?=.)/, '\1 \2')
+            # feedback[0]=unix time; [1]=length([2]); [2]=device_token
+            token = feedback[2].strip.downcase.gsub(/(.{8})(?=.)/, '\1 \2')
             device = APN::Device.find(:first, :conditions => {:token => token})
             if device
               device.feedback_at = Time.at(feedback[0])
-              #device.update_attribute(:feedback_at, Time.at(feedback[0]))
-              #device.save!
               devices << device
             end
           end

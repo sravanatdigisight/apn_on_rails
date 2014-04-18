@@ -131,7 +131,6 @@ class APN::App < APN::Base
   # This can be run from the following Rake task:
   #   $ rake apn:feedback:process
   def process_devices
-    puts "Enter process_devices"
     if self.cert.nil?
       raise APN::Errors::MissingCertificateError.new
       return
@@ -140,27 +139,22 @@ class APN::App < APN::Base
   end # process_devices
 
   def self.process_devices
-    puts "Enter self.process_devices"
     apps = APN::App.all
     apps.each do |app|
       app.process_devices
     end
     if !configatron.apn.cert.blank?
       global_cert = File.read(configatron.apn.cert)
-      puts "[1;31mcert: #{configatron.apn.cert}[0m"
       APN::App.process_devices_for_cert(global_cert)
     end
   end
 
   def self.process_devices_for_cert(the_cert)
-    puts "in APN::App.process_devices_for_cert"
     APN::Feedback.devices(the_cert).each do |device|
-      puts "[1;31mdevice: #{device.inspect}[0m"
       if device.last_registered_at < device.feedback_at
-        puts "device #{device.id} -> #{device.last_registered_at} < #{device.feedback_at}"
+        puts "[1;31mRemoving device: #{device.inspect}[0m"
+        logger.debug "[1;31mRemoving device: #{device.inspect}[0m"
         device.destroy
-      else
-        puts "device #{device.id} -> #{device.last_registered_at} not < #{device.feedback_at}"
       end
     end
   end
