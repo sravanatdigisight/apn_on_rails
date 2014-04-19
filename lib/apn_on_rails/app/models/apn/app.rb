@@ -152,8 +152,8 @@ class APN::App < APN::Base
   def self.process_devices_for_cert(the_cert)
     APN::Feedback.devices(the_cert).each do |device|
       if device.last_registered_at < device.feedback_at
-        puts "  [1;35mRemoving device: #{device.inspect}[0m"
-        logger.debug "  [0;35mRemoving device: #{device.inspect}[0m"
+        puts "  [1;31mRemoving device: #{device.inspect}[0m"
+        logger.debug "  [1;31mRemoving device: #{device.inspect}[0m"
         device.destroy
       end
     end
