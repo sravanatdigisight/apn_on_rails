@@ -107,6 +107,24 @@ class APN::Notification < APN::Base
     message
   end
 
+  # Enhanced format changes copied from github.com/greenhat/apn_on_rails.
+  # Creates the enhanced binary message needed to send to Apple in order to have the ability to
+  # retrieve error description from Apple server in case of connection was cancelled.
+  # Default expiry time is 1 day.
+  def enhanced_message_for_sending (seconds_to_expire = configatron.apn.notification_expiration_seconds)
+    command = ['1'].pack('H')
+    notification_id = "#{[self.id].pack('N')}"
+    expiry = "#{(Time.now + 1.day).pack('N')}"
+    token = self.device.to_hexa
+    token_length = [token.bytesize].pack('n')
+    payload = self.to_apple_json
+    payload_length = [payload.bytesize].pack('n')
+    encoded_time = [Time.now.to_i + seconds_to_expire].pack('N')
+    message = command + notification_id + expiry + token_length + token + payload_length + payload
+    raise APN::Errors::ExceededMessageSizeError.new(message) if message.size.to_i > 256
+    message
+  end
+
   def self.send_notifications
     ActiveSupport::Deprecation.warn("The method APN::Notification.send_notifications is deprecated.  Use APN::App.send_notifications instead.")
     APN::App.send_notifications
