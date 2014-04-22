@@ -113,7 +113,7 @@ class APN::Notification < APN::Base
   # retrieve error description from Apple server in case of connection was cancelled.
   # Default expiry time is 1 day.
   def enhanced_message_for_sending (seconds_to_expire = configatron.apn.notification_expiration_seconds)
-    command = ['1'].pack('H')
+    command = '\1'
     notification_id = [self.id].pack('N')
     #expiry = "#{(Time.now + 1.day).to_i.pack('N')}"
     expiry = [Time.now.to_i + seconds_to_expire].pack('N')
