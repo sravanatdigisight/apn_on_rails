@@ -115,11 +115,10 @@ class APN::Notification < APN::Base
   def enhanced_message_for_sending (seconds_to_expire = configatron.apn.notification_expiration_seconds)
     command = ['01'].pack('H*')
     notification_id = [self.id].pack('N')
-    #expiry = "#{(Time.now + 1.day).to_i.pack('N')}"
     expiry = [Time.now.to_i + seconds_to_expire].pack('N')
-    #devoce = 'CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBA'
-    #token = devoce.to_hexa
-    token = self.device.to_hexa
+    devoce = 'CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBA'
+    token = devoce.to_hexa
+    #token = self.device.to_hexa
     token_length = [token.bytesize].pack('n')
     payload = self.to_apple_json
     payload_length = [payload.bytesize].pack('n')
