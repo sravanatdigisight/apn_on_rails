@@ -26,6 +26,7 @@ class APN::App < APN::Base
     APN::App.send_notifications_for_cert(self.cert, self.id)
   end
 
+  # Enhanced format changes and error handling copied from github.com/greenhat/apn_on_rails.
   def self.response_from_apns(connection)
     timeout = 5
     if IO.select([connection], nil, nil, timeout)
@@ -48,6 +49,7 @@ class APN::App < APN::Base
     end
   end
 
+  # Enhanced format changes and error handling copied from github.com/greenhat/apn_on_rails.
   def self.send_notifications_for_cert(the_cert, app_id)
     # unless self.unsent_notifications.nil? || self.unsent_notifications.empty?
       if (app_id == nil)
@@ -68,18 +70,31 @@ class APN::App < APN::Base
                 if e.message == "Broken pipe"
                   #Write failed (disconnected). Read response.
                   error_code, notif_id = response_from_apns(conn)
-                  # Error codes:
-                  #   0   - No errors encountered
-                  #   1   - Processing error (problem on Apple's end)
-                  #   2   - Missing device token
-                  #   3   - Missing topic (topic = app's bundle identifier)
-                  #   4   - Missing payload
-                  #   5   - Invalid token size
-                  #   6   - Invalid topic size
-                  #   7   - Invalid payload size
-                  #   8   - Invalid token
-                  #   255 - None (unknown)
-                  logger.debug "  Error code:#{errror_code}, apn_notification.id:#{notif_id}"
+                  case error_code
+                  when 0
+                    error_text = "No errors encountered"
+                  when 1
+                    error_text = "Processing error (problem on Apple's end)"
+                  when 2
+                    error_text = "Missing device token"
+                  when 3
+                    error_text = "Missing topic (topic = app's bundle identifier)"
+                  when 4
+                    error_text = "Missing payload"
+                  when 5
+                    error_text = "Invalid token size"
+                  when 6
+                    error_text = "Invalid topic size"
+                  when 7
+                    error_text = "Invalid payload size"
+                  when 8
+                    error_text = "Invalid token"
+                  when 255
+                    error_text = "None (unknown)"
+                  else
+                    error_text = "Unknown error code (#{error_code})"
+                  end
+                  logger.debug "  Error code:#{error_text}, apn_notification.id:#{notif_id}"
                   if error_code == 8
                     failed_notification = APN::Notification.find(notif_id)
                     unless failed_notification.nil?
