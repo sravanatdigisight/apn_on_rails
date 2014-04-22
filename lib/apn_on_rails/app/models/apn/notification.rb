@@ -96,8 +96,9 @@ class APN::Notification < APN::Base
   end
 
   # Creates the binary message needed to send to Apple.
+  # Unmodified apn_on_rails 0.5.1 implements only this "simple notification format".
   def message_for_sending
-    command = ['0'].pack('H') # Unmodified APN_ON_RAILS 0.5.1 implements only "simple notification format".
+    command = ['0'].pack('H')
     token = self.device.to_hexa
     token_length = [token.bytesize].pack('n')
     payload = self.to_apple_json
@@ -113,7 +114,7 @@ class APN::Notification < APN::Base
   # Default expiry time is 1 day.
   def enhanced_message_for_sending (seconds_to_expire = configatron.apn.notification_expiration_seconds)
     command = ['1'].pack('H')
-    notification_id = "#{[self.id].pack('N')}"
+    notification_id = [self.id].pack('N')
     #expiry = "#{(Time.now + 1.day).to_i.pack('N')}"
     expiry = [Time.now.to_i + seconds_to_expire].pack('N')
     #devoce = 'CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBA'
