@@ -97,7 +97,7 @@ class APN::Notification < APN::Base
 
   # Creates the binary message needed to send to Apple.
   def message_for_sending
-    command = ['0'].pack('H') # Now, APN_ON_RAILS implements only "simple notification format".
+    command = ['0'].pack('H') # Unmodified APN_ON_RAILS 0.5.1 implements only "simple notification format".
     token = self.device.to_hexa
     token_length = [token.bytesize].pack('n')
     payload = self.to_apple_json
@@ -115,7 +115,9 @@ class APN::Notification < APN::Base
     command = ['1'].pack('H')
     notification_id = "#{[self.id].pack('N')}"
     expiry = "#{(Time.now + 1.day).pack('N')}"
-    token = self.device.to_hexa
+    devoce = 'CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBA'
+    token = devoce.to_hexa
+    #token = self.device.to_hexa
     token_length = [token.bytesize].pack('n')
     payload = self.to_apple_json
     payload_length = [payload.bytesize].pack('n')
