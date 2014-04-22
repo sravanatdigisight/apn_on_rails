@@ -117,7 +117,7 @@ class APN::Notification < APN::Base
     notification_id = [self.id].pack('N')
     expiry = [Time.now.to_i + seconds_to_expire].pack('N')
     devoce = 'CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBA'
-    token = devoce.to_hexa
+    token = devoce.pack('H*')
     #token = self.device.to_hexa
     token_length = [token.bytesize].pack('n')
     payload = self.to_apple_json
