@@ -92,6 +92,7 @@ class APN::App < APN::Base
                     error_text = "Unknown error code (#{error_code})"
                   end
                   logger.debug "  Error code:#{error_text}, apn_notification.id:#{notif_id}"
+                  puts "  Error code:#{error_text}, apn_notification.id:#{notif_id}"
                   if error_code == 8
                     failed_notification = APN::Notification.find(notif_id)
                     unless failed_notification.nil?
