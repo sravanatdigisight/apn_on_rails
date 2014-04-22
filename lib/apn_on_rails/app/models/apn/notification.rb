@@ -123,11 +123,9 @@ class APN::Notification < APN::Base
     payload = self.to_apple_json
     payload_length = [payload.bytesize].pack('n')
     message = command + notification_id + expiry + token_length + token + payload_length + payload
+    puts "[1;31mMESSAGE=#{message}[0m"
     puts "[1;31mMESSAGE=#{message.unpack('H*')}[0m"
-    f = File.open('/tmp/DOUG1.dat', 'w')
-    f.write(message)
-    f.close
-    logger.debug "[1;31mMESSAGE=#{message.unpack('H*')}[0m"
+    File.open('/tmp/DOUG1.dat', 'wb') {|file| file.write(message)}
     raise APN::Errors::ExceededMessageSizeError.new(message) if message.size.to_i > 256
     message
   end
