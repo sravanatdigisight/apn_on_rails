@@ -65,10 +65,7 @@ class APN::App < APN::Base
                 conn.write(noty.enhanced_message_for_sending)
                 noty.sent_at = Time.now
                 noty.save
-              rescue Exception => e
-                logger.debug "\nError '#{e.message}' on APN send notification"
-                if e.message == "Broken pipe"
-                  #Write failed (disconnected). Read response.
+                if true
                   error_code, notif_id = response_from_apns(conn)
                   case error_code
                   when 0
@@ -105,6 +102,11 @@ class APN::App < APN::Base
                       end
                     end
                   end
+                end
+              rescue Exception => e
+                logger.debug "\nError '#{e.message}' on APN send notification"
+                if e.message == "Broken pipe"
+                  #Write failed (disconnected). Read response.
                 end
               end
             end
