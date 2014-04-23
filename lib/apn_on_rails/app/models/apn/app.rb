@@ -28,7 +28,7 @@ class APN::App < APN::Base
 
   # Enhanced format changes and error handling copied from github.com/greenhat/apn_on_rails.
   def self.response_from_apns(connection)
-    timeout = 5
+    timeout = 2
     if IO.select([connection], nil, nil, timeout)
       buf = connection.read(6)
       if buf
@@ -65,6 +65,7 @@ class APN::App < APN::Base
                 conn.write(noty.enhanced_message_for_sending)
                 noty.sent_at = Time.now
                 noty.save
+                # Read the APN server's response (if any)
                 error_code, notif_id = response_from_apns(conn)
                 if error_code
                   case error_code
@@ -91,8 +92,8 @@ class APN::App < APN::Base
                   else
                     error_text = "Unknown error code (#{error_code})"
                   end
-                  logger.debug "  Error code:#{error_text}, apn_notification.id:#{notif_id}"
-                  puts "  Error code:#{error_text}, apn_notification.id:#{notif_id}"
+                  logger.debug "  APN send error:#{error_text}(#{error_code}), apn_notification.id:#{notif_id}"
+                  puts "  APN send error:#{error_text}(#{error_code}), apn_notification.id:#{notif_id}"
                   if error_code == 8
                     failed_notification = APN::Notification.find(notif_id)
                     unless failed_notification.nil?
@@ -108,7 +109,8 @@ class APN::App < APN::Base
                 logger.debug "\nError '#{e.message}' on APN send notification"
                 puts "\nError '#{e.message}' on APN send notification"
                 if e.message == "Broken pipe"
-                  #Write failed (disconnected). Read response.
+                  # Write failed (disconnected). Response handling was originally here, 
+                  # 
                 end
               end
             end
