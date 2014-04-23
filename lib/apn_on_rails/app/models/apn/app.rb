@@ -92,8 +92,8 @@ class APN::App < APN::Base
                   else
                     error_text = "Unknown error code (#{error_code})"
                   end
-                  logger.debug "  APN send error:#{error_text}(#{error_code}), apn_notification.id:#{notif_id}"
-                  puts "  APN send error:#{error_text}(#{error_code}), apn_notification.id:#{notif_id}"
+                  logger.debug "  [1;31mAPN send error:#{error_code}=#{error_text}, apn_notification.id:#{notif_id}[0m"
+                  puts "  APN send error:#{error_code}=#{error_text, apn_notification.id:#{notif_id}"
                   if error_code == 8
                     failed_notification = APN::Notification.find(notif_id)
                     unless failed_notification.nil?
@@ -106,7 +106,7 @@ class APN::App < APN::Base
                   end
                 end
               rescue Exception => e
-                logger.debug "\nError '#{e.message}' on APN send notification"
+                logger.debug "[1;31m\nError '#{e.message}' on APN send notification[0m"
                 puts "\nError '#{e.message}' on APN send notification"
                 if e.message == "Broken pipe"
                   # Write failed (disconnected). Response handling was originally here, 
