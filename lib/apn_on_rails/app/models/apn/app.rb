@@ -26,6 +26,18 @@ class APN::App < APN::Base
     APN::App.send_notifications_for_cert(self.cert, self.id)
   end
 
+  # Enhanced format changes and error handling copied from github.com/greenhat/apn_on_rails.
+  def self.response_from_apns(connection)
+    timeout = 2
+    if IO.select([connection], nil, nil, timeout)
+      buf = connection.read(6)
+      if buf
+        command, error_code, notification_id = buf.unpack('CCN')
+        [error_code, notification_id]
+      end
+    end
+  end
+
   def self.send_notifications
     apps = APN::App.all
     apps.each do |app|
@@ -37,6 +49,50 @@ class APN::App < APN::Base
     end
   end
 
+  # Enhanced APN format response processing.
+  def self.check_for_send_error(the_cert, app_id, conn)
+    error_code, notif_id = response_from_apns(conn)
+    if error_code
+      case error_code
+      when 0
+        error_text = "No errors encountered"
+      when 1
+        error_text = "Processing error (problem on Apple's end)"
+      when 2
+        error_text = "Missing device token"
+      when 3
+        error_text = "Missing topic (topic = app's bundle identifier)"
+      when 4
+        error_text = "Missing payload"
+      when 5
+        error_text = "Invalid token size"
+      when 6
+        error_text = "Invalid topic size"
+      when 7
+        error_text = "Invalid payload size"
+      when 8
+        error_text = "Invalid token"
+      when 255
+        error_text = "None (unknown)"
+      else
+        error_text = "Unknown error code (#{error_code})"
+      end
+      logger.debug "  [1;31mAPN send notificiation error:#{error_code}(#{error_text}), apn_notification.id:#{notif_id}[0m"
+      puts "  APN send notification error:#{error_code}(#{error_text}), apn_notification.id:#{notif_id}"
+      if error_code == 8
+        failed_notification = APN::Notification.find(notif_id)
+        unless failed_notification.nil?
+          unless failed_notification.device.nil?
+            APN::Device.delete(failed_notification.device.id)
+            # retry sending notifications after invalid token was deleted
+            send_notifications_for_cert(the_cert, app_id)
+          end
+        end
+      end
+    end
+  end
+
+  # Enhanced format changes and error handling copied from github.com/greenhat/apn_on_rails.
   def self.send_notifications_for_cert(the_cert, app_id)
     # unless self.unsent_notifications.nil? || self.unsent_notifications.empty?
       if (app_id == nil)
@@ -48,9 +104,22 @@ class APN::App < APN::Base
         APN::Connection.open_for_delivery({:cert => the_cert}) do |conn, sock|
           APN::Device.find_each(:conditions => conditions) do |dev|
             dev.unsent_notifications.each do |noty|
-              conn.write(noty.message_for_sending)
-              noty.sent_at = Time.now
-              noty.save
+              begin
+                conn.write(noty.enhanced_message_for_sending)
+                noty.sent_at = Time.now
+                noty.save
+                # Read the APN server's response (if any)
+                self.check_for_send_error(the_cert, app_id, conn)
+              rescue Exception => e
+                logger.debug "[1;31m\nError '#{e.message}' on APN send notification[0m"
+                puts "\nError '#{e.message}' on APN send notification"
+                if e.message == "Broken pipe"
+                  # Write failed (disconnected). Response handling was originally here, but this
+                  # rescue clause was not being invoked for any of the error response conditions,
+                  # so the response handling code was moved above, outside this clause, which
+                  # empirically works.
+                end
+              end
             end
           end
         end
