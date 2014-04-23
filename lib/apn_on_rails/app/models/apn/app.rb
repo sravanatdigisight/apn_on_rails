@@ -109,7 +109,7 @@ class APN::App < APN::Base
                 noty.sent_at = Time.now
                 noty.save
                 # Read the APN server's response (if any)
-                check_for_send_error
+                app.check_for_send_error
               rescue Exception => e
                 logger.debug "[1;31m\nError '#{e.message}' on APN send notification[0m"
                 puts "\nError '#{e.message}' on APN send notification"
