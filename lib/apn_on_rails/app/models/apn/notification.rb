@@ -110,23 +110,23 @@ class APN::Notification < APN::Base
 
   # Enhanced format changes copied from github.com/greenhat/apn_on_rails.
   # Creates the enhanced binary message needed to send to Apple in order to have the ability to
-  # retrieve error description from Apple server in case of connection was cancelled.
+  # retrieve an error description from Apple server in case the connection is cancelled.
   # Default expiry time is 1 day.
   def enhanced_message_for_sending (seconds_to_expire = configatron.apn.notification_expiration_seconds)
     command = ['01'].pack('H*')
     notification_id = [self.id].pack('N')
     expiry = [Time.now.to_i + seconds_to_expire].pack('N')
     token = self.device.to_hexa
-    # TESTING: results in error code 8
-    token = ['CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBA'].pack('H*')
+    # For testing: results in error code 8
+    #token = ['CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBA'].pack('H*')
     token_length = [token.bytesize].pack('n')
-    # TESTING: results in error code 2
+    # For testing: results in error code 2
     #token_length = [0].pack('n')
     payload = self.to_apple_json
     payload_length = [payload.bytesize].pack('n')
-    # TESTING: results in error code 4
+    # For testing: results in error code 4
     #payload_length = [0].pack('n')
-    # TESTING: results in error code 7
+    # For testing: results in error code 7
     #payload_length = [65535].pack('n')
     message = command + notification_id + expiry + token_length + token + payload_length + payload
     raise APN::Errors::ExceededMessageSizeError.new(message) if message.size.to_i > 256

@@ -116,7 +116,8 @@ class APN::App < APN::Base
                 if e.message == "Broken pipe"
                   # Write failed (disconnected). Response handling was originally here, but this
                   # rescue clause was not being invoked for any of the error response conditions,
-                  # so the response handling code was moved above, outside this clause.
+                  # so the response handling code was moved above, outside this clause, which
+                  # empirically works.
                 end
               end
             end
