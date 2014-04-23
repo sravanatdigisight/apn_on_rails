@@ -109,14 +109,14 @@ class APN::App < APN::Base
                 noty.sent_at = Time.now
                 noty.save
                 # Read the APN server's response (if any)
-                app.check_for_send_error
+                self.check_for_send_error
               rescue Exception => e
                 logger.debug "[1;31m\nError '#{e.message}' on APN send notification[0m"
                 puts "\nError '#{e.message}' on APN send notification"
                 if e.message == "Broken pipe"
                   # Write failed (disconnected). Response handling was originally here, but this
                   # rescue clause was not being invoked for any of the error response conditions,
-                  # so the response handling code was moved above, outside this clause
+                  # so the response handling code was moved above, outside this clause.
                 end
               end
             end
