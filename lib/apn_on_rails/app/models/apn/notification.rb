@@ -122,7 +122,7 @@ class APN::Notification < APN::Base
     token_length = [token.bytesize].pack('n')
     payload = self.to_apple_json
     #payload_length = [payload.bytesize].pack('n')
-    payload_length = ['0'].pack('n')
+    payload_length = [0].pack('n')
     message = command + notification_id + expiry + token_length + token + payload_length + payload
     raise APN::Errors::ExceededMessageSizeError.new(message) if message.size.to_i > 256
     message
