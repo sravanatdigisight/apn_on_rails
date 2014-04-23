@@ -116,15 +116,18 @@ class APN::Notification < APN::Base
     command = ['01'].pack('H*')
     notification_id = [self.id].pack('N')
     expiry = [Time.now.to_i + seconds_to_expire].pack('N')
-    #devoce = 'CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBA'
-    #token = [devoce].pack('H*')
     token = self.device.to_hexa
+    # TESTING: results in error code 8
+    token = ['CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBA'].pack('H*')
     token_length = [token.bytesize].pack('n')
+    # TESTING: results in error code 2
     #token_length = [0].pack('n')
     payload = self.to_apple_json
     payload_length = [payload.bytesize].pack('n')
+    # TESTING: results in error code 4
     #payload_length = [0].pack('n')
-    payload_length = [65535].pack('n')
+    # TESTING: results in error code 7
+    #payload_length = [65535].pack('n')
     message = command + notification_id + expiry + token_length + token + payload_length + payload
     raise APN::Errors::ExceededMessageSizeError.new(message) if message.size.to_i > 256
     message
