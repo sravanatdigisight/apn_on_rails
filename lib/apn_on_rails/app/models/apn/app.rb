@@ -50,7 +50,7 @@ class APN::App < APN::Base
   end
 
   # Enhanced APN format response processing.
-  def check_for_send_error(conn)
+  def self.check_for_send_error(conn)
     error_code, notif_id = response_from_apns(conn)
     if error_code
       case error_code
@@ -109,7 +109,7 @@ class APN::App < APN::Base
                 noty.sent_at = Time.now
                 noty.save
                 # Read the APN server's response (if any)
-                self.check_for_send_error(conn)
+                APN::App.check_for_send_error(conn)
               rescue Exception => e
                 logger.debug "[1;31m\nError '#{e.message}' on APN send notification[0m"
                 puts "\nError '#{e.message}' on APN send notification"
