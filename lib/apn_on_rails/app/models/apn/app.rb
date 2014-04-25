@@ -83,6 +83,8 @@ class APN::App < APN::Base
         failed_notification = APN::Notification.find(notif_id)
         unless failed_notification.nil?
           unless failed_notification.device.nil?
+            logger.debug "  [1;31mRemoving invalid device: #{device.inspect}[0m"
+            puts "  Removing invalid device: #{device.inspect}"
             APN::Device.delete(failed_notification.device.id)
             # retry sending notifications after invalid token was deleted
             send_notifications_for_cert(the_cert, app_id)
@@ -111,8 +113,8 @@ class APN::App < APN::Base
                 # Read the APN server's response (if any)
                 self.check_for_send_error(the_cert, app_id, conn)
               rescue Exception => e
-                logger.debug "[1;31m\nError '#{e.message}' on APN send notification[0m"
-                puts "\nError '#{e.message}' on APN send notification"
+                logger.debug "[1;31mError '#{e.message}' on APN send notification[0m"
+                puts "Error '#{e.message}' on APN send notification"
                 if e.message == "Broken pipe"
                   # Write failed (disconnected). Response handling was originally here, but this
                   # rescue clause was not being invoked for any of the error response conditions,
@@ -221,8 +223,8 @@ class APN::App < APN::Base
   def self.process_devices_for_cert(the_cert)
     APN::Feedback.devices(the_cert).each do |device|
       if device.last_registered_at < device.feedback_at
-        puts "  [1;31mRemoving device: #{device.inspect}[0m"
-        logger.debug "  [1;31mRemoving device: #{device.inspect}[0m"
+        logger.debug "  [1;31mRemoving uninstalled device: #{device.inspect}[0m"
+        puts "  Removing uninstalled device: #{device.inspect}"
         device.destroy
       end
     end
