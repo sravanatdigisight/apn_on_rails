@@ -83,8 +83,8 @@ class APN::App < APN::Base
         failed_notification = APN::Notification.find(notif_id)
         unless failed_notification.nil?
           unless failed_notification.device.nil?
-            logger.debug "  [1;31mRemoving invalid device: #{device.inspect}[0m"
-            puts "  Removing invalid device: #{device.inspect}"
+            logger.debug "  [1;31mRemoving invalid device: #{failed_notification.device.inspect}[0m"
+            puts "  Removing invalid device: #{failed_notification.device.inspect}"
             APN::Device.delete(failed_notification.device.id)
             # retry sending notifications after invalid token was deleted
             send_notifications_for_cert(the_cert, app_id)
