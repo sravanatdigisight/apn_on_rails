@@ -104,7 +104,7 @@ class APN::App < APN::Base
       end
       begin
         APN::Connection.open_for_delivery({:cert => the_cert}) do |conn, sock|
-          APN::Device.find_each(:conditions => conditions) do |dev|
+          APN::Device.where(conditions).find_each do |dev|
             dev.unsent_notifications.each do |noty|
               begin
                 conn.write(noty.enhanced_message_for_sending)
