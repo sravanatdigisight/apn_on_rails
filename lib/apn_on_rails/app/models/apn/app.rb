@@ -1,5 +1,7 @@
 class APN::App < APN::Base
 
+  attr_accessible :apn_dev_cert 
+  
   has_many :groups, :class_name => 'APN::Group', :dependent => :destroy
   has_many :devices, :class_name => 'APN::Device', :dependent => :destroy
   has_many :notifications, :through => :devices, :dependent => :destroy
