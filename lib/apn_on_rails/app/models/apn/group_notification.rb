@@ -76,7 +76,7 @@ class APN::GroupNotification < APN::Base
     payload = self.to_apple_json
     payload_length = [payload.bytesize].pack('n')
     message = command + token_length + token + payload_length + payload
-    raise APN::Errors::ExceededMessageSizeError.new(message) if payload.bytesize > 256
+    raise APN::Errors::ExceededMessageSizeError.new(message) if payload.bytesize > 1900
     message
   end
 

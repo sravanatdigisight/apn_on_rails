@@ -104,7 +104,7 @@ class APN::Notification < APN::Base
     payload = self.to_apple_json
     payload_length = [payload.bytesize].pack('n')
     message = command + token_length + token + payload_length + payload
-    raise APN::Errors::ExceededMessageSizeError.new(message) if payload.bytesize > 256
+    raise APN::Errors::ExceededMessageSizeError.new(message) if payload.bytesize > 1900
     message
   end
 
@@ -129,7 +129,7 @@ class APN::Notification < APN::Base
     # For testing: results in error code 7
     #payload_length = [65535].pack('n')
     message = command + notification_id + expiry + token_length + token + payload_length + payload
-    raise APN::Errors::ExceededMessageSizeError.new(message) if message.size.to_i > 256
+    raise APN::Errors::ExceededMessageSizeError.new(message) if message.size.to_i > 1900
     message
   end
 
